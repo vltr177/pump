@@ -1,0 +1,48 @@
+// УСТАНОВКА РЕЖИМА РАБОТЫ НАСОСА
+
+state.timer_locked();									          	// блокировка смены режимов на время t_locked
+IF state.timer_locked.Q OR NOT state.flag_locked THEN
+	state.timer_locked(IN:=FALSE);
+	state.flag_locked := 0;
+ELSE
+	RETURN;
+END_IF
+
+IF options.sw_main AND ((state.repair_mode AND state.disabled) OR (state.manual_mode AND (state.disabled OR state.started))) THEN
+	fault(err_malfunction=>err_malfunction); 				// проверка ошибок перед установкой режима Основной
+		IF NOT err_malfunction THEN
+			// установка режима Основной
+			state.main_mode :=1;
+			state.manual_mode :=0;
+			state.repair_mode :=0;
+			options.active_mode :="ОСНОВНОЙ";
+			locked();
+		END_IF
+ELSIF options.sw_manual AND ((state.repair_mode AND state.disabled) OR (state.main_mode AND (state.disabled OR state.started))) THEN
+	IF NOT state.malfunction THEN
+	// установка режима Ручной
+		state.manual_mode :=1;
+		state.main_mode := 0;
+		state.repair_mode :=0;
+		options.active_mode :="РУЧНОЙ";
+		locked();
+	END_IF
+ELSIF options.sw_repair THEN
+	// установка режима Ремонтный
+	state.timer_start(IN:=FALSE);
+	IF state.main_mode THEN 								// предварительный останов, если был Основной режим
+		// флаги команды для симуляции
+		gvl.input.flag_sim_start :=0;
+		gvl.input.flag_sim_stop :=1;
+		// активация выходов
+		output.set_start_op :=0;
+		output.set_stop_op :=1;
+		output.set_start_loc :=0;
+		output.set_stop_loc :=0;
+	END_IF
+	state.repair_mode :=1;
+	state.main_mode := 0;
+	state.manual_mode :=0;
+	options.active_mode :="РЕМОНТНЫЙ";
+	locked();
+END_IF
