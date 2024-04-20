@@ -1,0 +1,81 @@
+
+// УПРАВЛЕНИЕ
+
+// Игнорирование одновременных команд управления
+state.err_cmd := (BOOL_TO_BYTE(output.cmd_start_op) + BOOL_TO_BYTE(output.cmd_stop_op) + BOOL_TO_BYTE(gvl.input.in_start_loc) + BOOL_TO_BYTE(gvl.input.in_stop_loc))>1;
+IF state.err_cmd THEN
+	RETURN;
+END_IF
+
+
+state.timer_locked();																		                                  	// блокировка повторных команд управления на время t_locked
+IF state.timer_locked.Q OR NOT state.flag_locked THEN
+	state.timer_locked(IN:=FALSE);
+	state.flag_locked := 0;
+ELSE
+	RETURN;
+END_IF
+
+
+// Пуск от оператора
+IF output.cmd_start_op AND (NOT output.set_start_op AND NOT output.set_start_loc) THEN  		// команда пуск от оператора с блокировкой непрерывного пуска
+	IF state.main_mode AND (NOT state.starts OR NOT state.started OR NOT state.malfunction) THEN
+		// активация выходов	
+		output.set_start_op :=1;
+		output.set_stop_op :=0;
+		output.set_start_loc :=0;
+		output.set_stop_loc :=0;
+		// ставим флаги команды для симуляции
+		gvl.input.flag_sim_start :=1;
+		gvl.input.flag_sim_stop :=0;
+		// установка флага временной блокировки клавиатуры
+		locked();
+	END_IF
+// Стоп от оператора
+ELSIF output.cmd_stop_op AND (NOT output.set_stop_op AND NOT output.set_stop_loc) THEN  			// команда стоп от оператора с блокировкой непрерывного останова
+	IF NOT state.stops OR NOT state.disabled THEN
+		// активация выходов
+		output.set_start_op :=0;
+		output.set_stop_op :=1;
+		output.set_start_loc :=0;
+		output.set_stop_loc :=0;
+		// ставим флаги команды для симуляции
+		gvl.input.flag_sim_start :=0;
+		gvl.input.flag_sim_stop :=1;
+		// установка флага временной блокировки клавиатуры
+		locked();
+	END_IF
+// Пуск по месту
+ELSIF gvl.input.in_start_loc  AND (NOT output.set_start_op AND NOT output.set_start_loc) THEN  	// команда пуск по месту с блокировкой непрерывного пуска
+	// в симуляция сигнал не будет сброшен, гасим
+	gvl.input.in_start_loc :=0;
+	IF NOT state.repair_mode AND (NOT state.starts OR NOT state.started) THEN
+		// активация выходов
+		output.set_start_op :=0;
+		output.set_stop_op :=0;
+		output.set_start_loc :=1;
+		output.set_stop_loc :=0;
+		// ставим флаги команды для симуляции
+		gvl.input.flag_sim_start :=1;
+		gvl.input.flag_sim_stop :=0;
+		// установка флага временной блокировки клавиатуры
+		locked();
+	END_IF
+// Стоп по месту
+ELSIF gvl.input.in_stop_loc AND (NOT output.set_stop_op AND NOT output.set_stop_loc) THEN			// команда стоп по месту с блокировкой непрерывного останова
+	// в симуляция сигнал не будет сброшен, гасим
+	gvl.input.in_stop_loc :=0;
+	IF NOT state.stops OR NOT state.disabled THEN
+		// активация выходов
+		output.set_start_op :=0;
+		output.set_stop_op :=0;
+		output.set_start_loc :=0;
+		output.set_stop_loc :=1;
+		// ставим флаги команды для симуляции
+		gvl.input.flag_sim_start :=0;
+		gvl.input.flag_sim_stop :=1;
+		// установка флага временной блокировки клавиатуры
+		locked();
+	END_IF
+END_IF
+
