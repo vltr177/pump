@@ -1,0 +1,58 @@
+// АВТОМАТИЧЕСКАЯ УСТАНОВКА СОСТОЯНИЙ НАСОСА
+
+// Отключен
+IF gvl.input.pressure_bar < options.press_limit AND NOT gvl.input.starter AND NOT err_malfunction THEN
+	state.disabled :=1;
+	state.starts :=0;
+	state.started :=0;
+	state.stops :=0;
+	state.malfunction :=0;
+// Запускается
+ELSIF gvl.input.pressure_bar < options.press_limit AND gvl.input.starter AND NOT err_malfunction THEN
+	state.disabled :=0;
+	state.starts :=1;
+	state.started :=0;
+	state.stops :=0;
+	state.malfunction :=0;
+// Включен
+ELSIF gvl.input.pressure_bar > options.press_limit AND gvl.input.starter AND NOT err_malfunction THEN
+	state.disabled :=0;
+	state.starts :=0;
+	state.started :=1;
+	state.stops :=0;
+	state.malfunction :=0;
+// Останавливается
+ELSIF gvl.input.pressure_bar > options.press_limit AND NOT gvl.input.starter AND NOT err_malfunction THEN
+	state.disabled :=0;
+	state.starts :=0;
+	state.started :=0;
+	state.stops :=1;
+	state.malfunction :=0;
+// Неисправность
+ELSIF err_malfunction AND state.main_mode THEN
+	state.disabled :=0;
+	state.starts :=0;
+	state.started :=0;
+	state.stops :=0;
+	state.malfunction :=1;
+	// устанавливаем Ремонтный режим
+	state.main_mode :=0;
+	state.manual_mode :=0;
+	state.repair_mode :=1;
+	options.active_mode :="РЕМОНТНЫЙ";
+END_IF
+
+
+// ПРОЦЕДУРЫ РЕМОНТНОГО РЕЖИМА
+
+// Постоянный останов при состоянии Неисправность и режиме Ремонтный
+IF state.repair_mode AND state.malfunction THEN
+	// флаги команды для симуляции
+	gvl.input.flag_sim_start :=0;
+	gvl.input.flag_sim_stop :=1;
+	// активация выходов
+	output.set_start_op :=0;
+	output.set_stop_op :=1;
+	output.set_start_loc :=0;
+	output.set_stop_loc :=0;
+END_IF
