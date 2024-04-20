@@ -1,0 +1,4 @@
+{attribute 'qualified_only'}
+VAR_GLOBAL
+	input: pump_input;														// структура входных сигналов
+END_VAR
