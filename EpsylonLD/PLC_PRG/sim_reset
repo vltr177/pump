@@ -1,0 +1,39 @@
+// ПЕРЕЗАГРУЗКА СИМУЛЯЦИИ
+
+
+//options
+options.sim_starter_lost :=0;
+options.sim_starter_damage :=0;
+options.sim_voltage :=1;
+// input
+gvl.input.pressure_ma :=4;
+gvl.input.starter :=0;
+gvl.input.voltage :=1;
+gvl.input.in_start_loc :=0;
+gvl.input.in_stop_loc :=0;
+gvl.input.flag_sim_start :=0;
+gvl.input.flag_sim_stop :=0;
+// selftest
+state.err_start_time :=0;
+state.err_stop_time :=0;
+state.err_voltage :=0;
+err_malfunction :=0;
+//output
+output.set_start_op :=0;
+output.set_stop_op :=0;
+output.set_start_loc :=0;
+output.set_stop_loc :=0;
+//state
+state.starts:=0;
+state.started:=0;
+state.stops:=0;
+state.malfunction:=0;
+state.disabled:=1;
+state.manual_mode :=0;
+state.repair_mode :=0;
+state.main_mode := 1;
+options.active_mode :="ОСНОВНОЙ";
+// timers
+state.timer_start(IN:=FALSE);
+state.timer_stop(IN:=FALSE);
+state.timer_voltage(IN:=FALSE);	
