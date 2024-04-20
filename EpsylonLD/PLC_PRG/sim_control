@@ -1,0 +1,42 @@
+// ВОЗДЕЙСТВИЯ НА СИМУЛЯЦИЮ
+
+IF NOT options.sim THEN
+	RETURN;
+END_IF
+
+// Симулируем сигнал на входе для Пуск по месту
+IF output.cmd_start_loc AND NOT GVL.input.in_start_loc AND (NOT output.set_start_loc AND NOT output.set_start_op) THEN
+	GVL.input.in_start_loc :=1;
+	GVL.input.in_stop_loc :=0;
+// Симулируем сигнал на входе для Стоп по месту
+ELSIF output.cmd_stop_loc AND NOT GVL.input.in_stop_loc AND (NOT output.set_stop_loc AND NOT output.set_stop_op)  THEN
+	GVL.input.in_start_loc :=0;
+	GVL.input.in_stop_loc :=1;
+END_IF
+
+// Выход из строя МП
+options.RIS_sim_starter_damage(CLK:= options.sim_starter_damage);
+IF options.RIS_sim_starter_damage.Q THEN
+	gvl.input.starter :=0;
+	// Сброс давления из-за отказа
+	IF gvl.input.pressure_ma > 4 THEN
+		gvl.input.flag_sim_start :=0;
+		gvl.input.flag_sim_stop :=1;
+	END_IF
+END_IF
+
+// Возобновление работы МП
+options.FAL_sim_starter_damage(CLK:= options.sim_starter_damage);
+IF options.FAL_sim_starter_damage.Q THEN
+	gvl.input.starter :=1;
+	// Возобновление набора давления после устранения отказа
+	IF gvl.input.pressure_ma <20 THEN
+		gvl.input.flag_sim_start :=1;
+		gvl.input.flag_sim_stop :=0;
+	END_IF
+END_IF
+
+// Перезагрузка симуляции
+IF options.sim_ok THEN
+	sim_reset();
+END_IF
