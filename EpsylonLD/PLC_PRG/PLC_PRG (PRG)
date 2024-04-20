@@ -1,0 +1,17 @@
+PROGRAM PLC_PRG
+VAR
+	output: pump_output;													                          	// структура управления насосом
+	options: pump_options;											                        			// структура опций насоса
+	state: pump_state;												                        	  		// структура описания насоса
+	fault : FB_selftest:=(output:=output, options:=options, state:=state);		// экземпляр ФБ контроля ошибок
+	err_malfunction: BOOL;												                        		// неисправность
+END_VAR
+-----------------------------
+read_input();											              	// Чтение входных сигналов
+change_state();										            		// Активация состояний
+IF state.main_mode THEN						        				// Контроль ошибок в Основном режиме
+	fault(err_malfunction=>err_malfunction);
+END_IF
+set_mode();													              // Cмена режима
+control();												              	// Обработка команд
+sim_control();										             		// Управление в симуляции
