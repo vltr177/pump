@@ -2,16 +2,16 @@ TYPE pump_output :
 STRUCT
 	
 	// КОМАНДЫ
-	cmd_start_op: BOOL;				// команда "Старт от оператора"
-	cmd_stop_op: BOOL;				// команда "Стоп от оператора"
+	cmd_start_op: BOOL;			// команда "Старт от оператора"
+	cmd_stop_op: BOOL;			// команда "Стоп от оператора"
 	cmd_start_loc: BOOL;			// команда "Старт по месту"
-	cmd_stop_loc: BOOL;				// команда "Стоп от месту"
+	cmd_stop_loc: BOOL;			// команда "Стоп от месту"
 
 	// ВЫХОДНЫЕ СИГНАЛЫ
-	set_start_op: BOOL;				// Старт от оператора (DO_32_011, Bit0)
-	set_stop_op: BOOL;				// Стоп от оператора (DO_32_011, Bit1)
+	set_start_op: BOOL;			// Старт от оператора (DO_32_011, Bit0)
+	set_stop_op: BOOL;			// Стоп от оператора (DO_32_011, Bit1)
 	set_start_loc: BOOL;			// Старт по месту (DO_32_011, Bit2)
-	set_stop_loc: BOOL;				// Стоп по месту (DO_32_011, Bit3)
+	set_stop_loc: BOOL;			// Стоп по месту (DO_32_011, Bit3)
 	
 END_STRUCT
 END_TYPE
