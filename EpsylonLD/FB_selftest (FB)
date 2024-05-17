@@ -17,7 +17,7 @@ END_VAR
 // Проверка события - отключение напряжения в состоянии Отключен на время более чем t_voltage
 state.FAL_voltage(CLK:= gvl.input.voltage);
 IF state.disabled AND state.FAL_voltage.Q THEN
-	state.timer_voltage(PT:=DWORD_TO_TIME(options.t_voltage),IN:=TRUE);		    		//взводим таймер отсутствия напряжения														//устанавливаем флаг запущенного таймера
+	state.timer_voltage(PT:=DWORD_TO_TIME(options.t_voltage),IN:=TRUE);			//взводим таймер отсутствия напряжения	//устанавливаем флаг запущенного таймера
 END_IF
 state.timer_voltage();
 IF state.disabled AND state.timer_voltage.Q AND NOT gvl.input.voltage THEN			//если напряжение за допустимое время не появилось, ошибка
@@ -40,14 +40,14 @@ state.err_starter := NOT gvl.input.voltage AND gvl.input.starter;
 state.RIS_start_op(CLK:= output.set_start_op);
 state.RIS_starter(CLK:= gvl.input.starter);
 IF state.RIS_start_op.Q OR (state.RIS_starter.Q AND output.set_start_loc) THEN
-	state.timer_stop(IN:=FALSE);											                  //на всякий сбрасываем таймер стопа, если прерывали останов
+	state.timer_stop(IN:=FALSE);							//на всякий сбрасываем таймер стопа, если прерывали останов
 	state.timer_start(PT:=DWORD_TO_TIME(options.t_start),IN:=TRUE);			//взводим таймер времени запуска
 END_IF
 state.timer_start();
-IF state.timer_start.Q AND NOT state.started THEN					      	    //если не набрано необходимое давление за допустимое время, ошибка
+IF state.timer_start.Q AND NOT state.started THEN					//если не набрано необходимое давление за допустимое время, ошибка
 	state.err_start_time := 1;
 	state.timer_start(IN:=FALSE);
-ELSIF state.timer_start.Q AND state.started THEN						      	//если набрано необходимое давление за допустимое время, отбой
+ELSIF state.timer_start.Q AND state.started THEN					//если набрано необходимое давление за допустимое время, отбой
 	state.timer_start(IN:=FALSE);
 END_IF
 
@@ -56,14 +56,14 @@ END_IF
 state.RIS_stop_op(CLK:= output.set_stop_op);
 state.FAL_starter(CLK:= gvl.input.starter);
 IF state.RIS_stop_op.Q OR (state.FAL_starter.Q AND output.set_stop_loc) THEN
-	state.timer_start(IN:=FALSE);										                	//на всякий сбрасываем таймер пуска, если прерывали запуск
+	state.timer_start(IN:=FALSE);							//на всякий сбрасываем таймер пуска, если прерывали запуск
 	state.timer_stop(PT:=DWORD_TO_TIME(options.t_stop),IN:=TRUE);			//взводим таймер времени останова
 END_IF
 state.timer_stop();
-IF state.timer_stop.Q AND NOT state.disabled THEN					      		//если не сброшено давление на необходимый уровень за допустимое время, ошибка
+IF state.timer_stop.Q AND NOT state.disabled THEN					//если не сброшено давление на необходимый уровень за допустимое время, ошибка
 	state.err_stop_time := 1;
 	state.timer_stop(IN:=FALSE);
-ELSIF state.timer_stop.Q AND state.disabled THEN					    		//если сброшено давление на необходимый уровень за допустимое время, отбой
+ELSIF state.timer_stop.Q AND state.disabled THEN					//если сброшено давление на необходимый уровень за допустимое время, отбой
 	state.timer_stop(IN:=FALSE);
 END_IF
 
