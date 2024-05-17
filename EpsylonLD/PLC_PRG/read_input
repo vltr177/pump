@@ -1,13 +1,13 @@
 // ЧТЕНИЕ ВХОДНЫХ СИГНАЛОВ
 
-IF NOT options.sim THEN                            // чтение входов
-	gvl.input.pressure_ma := in_pressure;				  	// давление, ma (АI_08_041, канал1)
-	gvl.input.starter := in_starter;					    	// состояние МП (DI_32_011, Bit0)
-	gvl.input.voltage := in_voltage;					    	// наличие напряжения (DI_32_011, Bit1)
-	gvl.input.in_start_loc := in_start_loc;					// пуск по месту(DI_32_011, Bit2, импульс)
-	gvl.input.in_stop_loc := in_stop_loc;				  	// стоп по мест (DI_32_011, Bit3, импульс)
+IF NOT options.sim THEN                            		// чтение входов
+	gvl.input.pressure_ma := in_pressure;			// давление, ma (АI_08_041, канал1)
+	gvl.input.starter := in_starter;			// состояние МП (DI_32_011, Bit0)
+	gvl.input.voltage := in_voltage;			// наличие напряжения (DI_32_011, Bit1)
+	gvl.input.in_start_loc := in_start_loc;			// пуск по месту(DI_32_011, Bit2, импульс)
+	gvl.input.in_stop_loc := in_stop_loc;			// стоп по мест (DI_32_011, Bit3, импульс)
 ELSE
-	gvl.input.voltage := options.sim_voltage;				// симуляция наличия напряжения												
+	gvl.input.voltage := options.sim_voltage;		// симуляция наличия напряжения												
 END_IF
 
 // масштабирование
