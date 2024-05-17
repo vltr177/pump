@@ -1,6 +1,6 @@
 // УСТАНОВКА РЕЖИМА РАБОТЫ НАСОСА
 
-state.timer_locked();									          	// блокировка смены режимов на время t_locked
+state.timer_locked();							// блокировка смены режимов на время t_locked
 IF state.timer_locked.Q OR NOT state.flag_locked THEN
 	state.timer_locked(IN:=FALSE);
 	state.flag_locked := 0;
@@ -9,7 +9,7 @@ ELSE
 END_IF
 
 IF options.sw_main AND ((state.repair_mode AND state.disabled) OR (state.manual_mode AND (state.disabled OR state.started))) THEN
-	fault(err_malfunction=>err_malfunction); 				// проверка ошибок перед установкой режима Основной
+	fault(err_malfunction=>err_malfunction); 			// проверка ошибок перед установкой режима Основной
 		IF NOT err_malfunction THEN
 			// установка режима Основной
 			state.main_mode :=1;
@@ -30,7 +30,7 @@ ELSIF options.sw_manual AND ((state.repair_mode AND state.disabled) OR (state.ma
 ELSIF options.sw_repair THEN
 	// установка режима Ремонтный
 	state.timer_start(IN:=FALSE);
-	IF state.main_mode THEN 								// предварительный останов, если был Основной режим
+	IF state.main_mode THEN 					// предварительный останов, если был Основной режим
 		// флаги команды для симуляции
 		gvl.input.flag_sim_start :=0;
 		gvl.input.flag_sim_stop :=1;
