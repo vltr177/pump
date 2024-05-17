@@ -1,4 +1,4 @@
 // ВРЕМЕННАЯ БЛОКИРОВКА КЛАВИАТУРЫ
 
-state.timer_locked(PT:=DWORD_TO_TIME(options.t_locked),IN:=TRUE);						// взводим таймер блокировки клавиатуры на время t_locked
+state.timer_locked(PT:=DWORD_TO_TIME(options.t_locked),IN:=TRUE);			// взводим таймер блокировки клавиатуры на время t_locked
 state.flag_locked :=1;
