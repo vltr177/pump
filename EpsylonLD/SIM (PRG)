@@ -5,18 +5,18 @@ END_VAR
 
 // СИМУЛЯЦИЯ
 
-IF NOT PLC_PRG.options.sim THEN 													      			// отбой, если отключена симуляция
+IF NOT PLC_PRG.options.sim THEN 	// отбой, если отключена симуляция
 	RETURN;
 END_IF
 
 // Симуляция набора давления
 IF gvl.input.flag_sim_start THEN
 	 // симуляция параметров отказа МП
-	IF  PLC_prg.options.sim_starter_damage THEN 											                      	// если МП повреждён, не набираем давление
+	IF  PLC_prg.options.sim_starter_damage THEN 							// если МП повреждён, не набираем давление
 		RETURN;
 	ELSIF PLC_prg.options.sim_starter_lost AND NOT PLC_prg.options.sim_starter_damage THEN		// если МП неуправляем, все равно пытаемся набрать давление
 		IF  NOT gvl.input.starter THEN
-			RETURN;																			                                        	// неудачная попытка набора давления
+			RETURN;										// неудачная попытка набора давления
 		END_IF
 	ELSIF NOT PLC_prg.options.sim_starter_lost AND NOT PLC_prg.options.sim_starter_damage THEN 	// штатная работа МП
 		 gvl.input.starter := 1;
@@ -25,16 +25,16 @@ IF gvl.input.flag_sim_start THEN
 	IF gvl.input.pressure_ma + PLC_PRG.options.v_speed_up <=20 THEN
 		gvl.input.pressure_ma := gvl.input.pressure_ma + PLC_PRG.options.v_speed_up;
 	ELSE	
-		gvl.input.flag_sim_start :=0; 														                            	// симуляция набора давления произведена
+		gvl.input.flag_sim_start :=0; 								// симуляция набора давления произведена
 	END_IF
 // Симуляция сброса давления
 ELSIF gvl.input.flag_sim_stop THEN
 	 // симуляция параметров отказа МП	
-	IF  PLC_prg.options.sim_starter_damage THEN 										                      		// если МП повреждён, естественный сброс давления
+	IF  PLC_prg.options.sim_starter_damage THEN 							// если МП повреждён, естественный сброс давления
 		//
 	ELSIF PLC_prg.options.sim_starter_lost AND NOT PLC_prg.options.sim_starter_damage THEN		// если МП неуправляем, невозможно сбросить давление
 		IF gvl.input.starter THEN
-			RETURN;																				                                        // неудачная попытка сброса давления
+			RETURN;										// неудачная попытка сброса давления
 		END_IF
 	ELSIF NOT PLC_prg.options.sim_starter_lost AND NOT PLC_prg.options.sim_starter_damage THEN 	// штатная работа МП
 		 gvl.input.starter := 0;
@@ -43,6 +43,6 @@ ELSIF gvl.input.flag_sim_stop THEN
 	IF gvl.input.pressure_ma - PLC_PRG.options.v_speed_down >= 4 THEN
 		gvl.input.pressure_ma := gvl.input.pressure_ma - PLC_PRG.options.v_speed_down;
 	ELSE	
-		gvl.input.flag_sim_stop :=0;  											                             				// симуляция сброса давления произведена
+		gvl.input.flag_sim_stop :=0;  								// симуляция сброса давления произведена
 	END_IF
 END_IF
